@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.ComicMapper">
+
+    <sql id="whereCondition">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (title LIKE CONCAT('%', #{keyword}, '%') OR author LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="genreId != null">
+                AND genre_id = #{genreId}
+            </if>
+            <if test="regionId != null">
+                AND region_id = #{regionId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            <if test="isPaid != null">
+                AND is_paid = #{isPaid}
+            </if>
+        </where>
+    </sql>
+
+    <select id="search" resultType="com.comic.entity.Comic">
+        SELECT * FROM comic
+        <include refid="whereCondition"/>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countSearch" resultType="int">
+        SELECT COUNT(*) FROM comic
+        <include refid="whereCondition"/>
+    </select>
+
+    <select id="findPage" resultType="com.comic.entity.Comic">
+        SELECT * FROM comic
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (title LIKE CONCAT('%', #{keyword}, '%') OR author LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM comic
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (title LIKE CONCAT('%', #{keyword}, '%') OR author LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </select>
+
+</mapper>

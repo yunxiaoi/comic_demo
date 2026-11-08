@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.UpdateScheduleMapper">
+
+    <resultMap id="scheduleWithComic" type="com.comic.entity.UpdateSchedule">
+        <id property="id" column="id"/>
+        <result property="comicId" column="comic_id"/>
+        <result property="weekday" column="weekday"/>
+        <result property="createTime" column="create_time"/>
+        <result property="comicTitle" column="comic_title"/>
+    </resultMap>
+
+    <!-- 查询所有计划，关联漫画 -->
+    <select id="findAll" resultMap="scheduleWithComic">
+        SELECT s.*, c.title, c.cover
+        FROM update_schedule s
+                 LEFT JOIN comic c ON s.comic_id = c.id
+        ORDER BY s.weekday, s.id
+    </select>
+
+    <!-- 根据星期几查询 -->
+    <select id="findByWeekday" resultMap="scheduleWithComic">
+        SELECT s.*, c.title AS comic_title
+        FROM update_schedule s
+                 LEFT JOIN comic c ON s.comic_id = c.id
+        WHERE s.weekday = #{weekday}
+    </select>
+
+    <!-- 插入 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO update_schedule (comic_id, weekday) VALUES (#{comicId}, #{weekday})
+    </insert>
+
+    <!-- 删除 -->
+    <delete id="deleteById">
+        DELETE FROM update_schedule WHERE id = #{id}
+    </delete>
+</mapper>

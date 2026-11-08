@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.UserReadHistoryMapper">
+
+    <resultMap id="readHistoryMap" type="com.comic.entity.UserReadHistory">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="comicId" column="comic_id"/>
+        <result property="chapterId" column="chapter_id"/>
+        <result property="readTime" column="read_time"/>
+        <result property="comicTitle" column="comic_title"/>
+        <result property="chapterTitle" column="chapter_title"/>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="readHistoryMap">
+        SELECT
+            h.*,
+            c.title AS comic_title,
+            ch.title AS chapter_title
+        FROM user_read_history h
+                 LEFT JOIN comic c ON h.comic_id = c.id
+                 LEFT JOIN comic_chapter ch ON h.chapter_id = ch.id
+        WHERE h.user_id = #{userId}
+        ORDER BY h.read_time DESC
+    </select>
+
+</mapper>

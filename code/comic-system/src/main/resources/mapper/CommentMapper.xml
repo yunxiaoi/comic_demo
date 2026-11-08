@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.CommentMapper">
+
+    <resultMap id="commentWithInfo" type="com.comic.entity.Comment">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="targetType" column="target_type"/>
+        <result property="targetId" column="target_id"/>
+        <result property="content" column="content"/>
+        <result property="createTime" column="create_time"/>
+        <result property="username" column="username"/>
+        <result property="targetTitle" column="target_title"/>
+    </resultMap>
+
+    <!-- 分页查询所有评论（后台用） -->
+    <select id="findPage" resultMap="commentWithInfo">
+        SELECT c.*, u.username,
+               CASE c.target_type
+                   WHEN 1 THEN (SELECT title FROM comic WHERE id = c.target_id)
+                   WHEN 2 THEN (SELECT title FROM forum_post WHERE id = c.target_id)
+                   END AS target_title
+        FROM comment c
+                 LEFT JOIN user u ON c.user_id = u.id
+        ORDER BY c.id DESC
+            LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM comment
+    </select>
+
+    <!-- 其他方法可根据需要添加 -->
+</mapper>

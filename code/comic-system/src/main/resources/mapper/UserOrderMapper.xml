@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.comic.mapper.UserOrderMapper">
+
+    <select id="findPage" resultType="com.comic.entity.UserOrder">
+        SELECT o.*, u.username, c.title as comicTitle
+        FROM user_order o
+        LEFT JOIN user u ON o.user_id = u.id
+        LEFT JOIN comic c ON o.comic_id = c.id
+        <where>
+            <if test="username != null and username != ''">
+                u.username LIKE CONCAT('%', #{username}, '%')
+            </if>
+        </where>
+        ORDER BY o.id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM user_order o
+        LEFT JOIN user u ON o.user_id = u.id
+        <where>
+            <if test="username != null and username != ''">
+                u.username LIKE CONCAT('%', #{username}, '%')
+            </if>
+        </where>
+    </select>
+    <resultMap id="orderMap" type="com.comic.entity.UserOrder">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="comicId" column="comic_id"/>
+        <result property="amount" column="amount"/>
+        <result property="createTime" column="create_time"/>
+        <result property="comicTitle" column="comic_title"/>
+    </resultMap>
+
+    <select id="findByUserId" resultMap="orderMap">
+        SELECT o.*, c.title AS comic_title
+        FROM user_order o
+                 LEFT JOIN comic c ON o.comic_id = c.id
+        WHERE o.user_id = #{userId}
+        ORDER BY o.id DESC
+    </select>
+
+</mapper>
